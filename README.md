@@ -1,77 +1,40 @@
 # RDP Multi-Session Manager (Windows)
 
-> Kurz gesagt: Mit dieser App kannst du mehrere Remote-Desktop-Verbindungen (RDP) **gleichzeitig in einem einzigen Fenster mit Tabs** öffnen.
+Diese Anwendung ist ein **Windows-Desktop-Tool für Administratoren**, um mehrere Microsoft-RDP-Sitzungen gleichzeitig in einem Fenster mit Tabs zu verwalten.
 
----
+## Für Enduser: So nutzt du die App
 
-## 1) Ich bin absoluter Laie – was muss ich können?
-
-Du musst **kein C#** können und nichts programmieren.
-
-Wenn du die App nur benutzen willst, brauchst du nur:
-- einen Windows-PC,
-- die fertige `*.exe` der App,
-- Zugangsdaten für die Server, auf die du dich per RDP verbinden darfst.
-
----
-
-## 2) Was brauche ich als Endnutzer wirklich?
-
-## Pflicht
-- **Windows 10 oder 11** (oder Windows Server mit Desktop).
-- Netzwerkzugriff auf den Zielserver (RDP, meistens Port **3389**).
-- Ein Benutzerkonto mit RDP-Berechtigung auf dem Zielserver.
-
-## Eventuell nötig
-- Falls die App **nicht** als „Self-contained“ geliefert wurde:
-  - installiere die **.NET 8 Desktop Runtime**.
-
-## Nicht nötig
-- Kein Visual Studio.
-- Kein .NET SDK.
-- Keine Programmierkenntnisse.
-
----
-
-## 3) Schritt-für-Schritt: App benutzen
-
-1. `RdpMultiSessionManager.exe` starten.
-2. In das Feld **„Hostname oder IP“** den Server eintragen (z. B. `10.0.0.20`).
+1. App starten.
+2. Im Feld **„Hostname oder IP“** den Zielhost eintragen (z. B. `server01.firma.local` oder `10.0.0.20`).
 3. Auf **„Neue RDP-Session“** klicken.
-4. Ein neuer Tab wird geöffnet.
-5. Im Windows-Anmeldefenster Benutzername/Passwort eingeben.
-6. Für weitere Server einfach wieder Schritt 2–5.
-7. Tabs kannst du über das **„×“** schließen.
-8. Wenn eine Verbindung weg ist, steht im Tab **„(disconnected)“**.
+4. Es öffnet sich ein neuer Tab mit der eingebetteten RDP-Sitzung.
+5. Windows/RDP zeigt den normalen Credential-Dialog (kein Passwort in der App gespeichert).
+6. Für weitere Hosts einfach neue Tabs erstellen.
+7. Tabs können über das kleine **„×“** im Tab geschlossen werden.
+8. Bei Verbindungsabbruch wird der Tab als **„(disconnected)“** markiert.
 
----
+## Welches Environment wird benötigt?
 
-## 4) Häufige Probleme (einfach erklärt)
+### Betriebssystem
+- **Windows 10/11** oder **Windows Server** mit Desktop-Erfahrung.
+- Die App ist **Windows-only** (wegen WinForms + Microsoft RDP ActiveX).
 
-### „Ich kann nicht verbinden“
-Prüfe:
-- Ist der Servername / die IP korrekt?
-- Ist der Server eingeschaltet und im Netzwerk erreichbar?
-- Ist RDP am Zielserver aktiviert?
-- Darf dein Benutzerkonto sich per RDP anmelden?
-- Ist die Firewall für RDP (Port 3389) offen?
+### Laufzeit für Enduser (nur Ausführen)
+- Wenn als self-contained veröffentlicht: keine separate .NET-Installation nötig.
+- Wenn framework-dependent veröffentlicht: **.NET 8 Desktop Runtime** erforderlich.
 
-### „Es passiert gar nichts beim Start“
-- Wahrscheinlich fehlt die Laufzeit.
-- Installiere die **.NET 8 Desktop Runtime** (nur wenn die App nicht self-contained verteilt wurde).
-
----
-
-## 5) Für Entwickler (nur wenn du selbst bauen willst)
-
-Dieser Teil ist **nur** für Personen, die den Quellcode kompilieren möchten.
-
-Benötigt:
-- Windows 10/11
+### Für Entwicklung/Build
 - **.NET 8 SDK**
-- optional Visual Studio 2022 mit „.NET-Desktopentwicklung“
+- **Visual Studio 2022** (empfohlen) mit Workload:
+  - „.NET-Desktopentwicklung“
+- Zugriff auf Microsoft RDP ActiveX/Terminal Services Komponenten (unter Windows vorhanden).
 
-Befehle:
+### Netzwerk & Berechtigungen
+- Netzwerkzugriff auf Zielhost und RDP-Port (standardmäßig TCP **3389**).
+- Auf Zielsystem muss RDP aktiviert sein.
+- Nutzerkonto benötigt RDP-Anmelderechte.
+
+## Starten (Entwicklung)
 
 ```bash
 dotnet restore
@@ -79,10 +42,18 @@ dotnet build
 dotnet run
 ```
 
-Veröffentlichen (EXE erzeugen):
+> Hinweis: Build/Run funktioniert nur auf Windows mit installiertem .NET SDK.
 
+## Veröffentlichung (Beispiel)
+
+### Framework-dependent
+```bash
+dotnet publish -c Release -r win-x64 --self-contained false
+```
+
+### Self-contained
 ```bash
 dotnet publish -c Release -r win-x64 --self-contained true /p:PublishSingleFile=true
 ```
 
-Danach liegt die EXE im `bin/.../publish`-Ordner.
+Die erzeugte EXE liegt danach im `bin/.../publish`-Ordner.
